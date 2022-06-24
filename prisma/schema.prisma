@@ -1,0 +1,166 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "linux-musl"]
+  previewFeatures = ["mongodb"]
+}
+
+model Department {
+  id          String           @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime?        @default(now())
+  deleted     Boolean?         @default(false)
+  deletedAt   DateTime?
+  teams       DepartmentTeam[]
+}
+
+model DepartmentTeam {
+  id           String            @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  title        String
+  description  String
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime?         @default(now())
+  deleted      Boolean?          @default(false)
+  deletedAt    DateTime?
+  departmentId String            @db.ObjectId
+  department   Department        @relation(fields: [departmentId], references: [id])
+  groups       DepartmentGroup[]
+}
+
+model DepartmentGroup {
+  id          String         @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime?      @default(now())
+  deleted     Boolean?       @default(false)
+  deletedAt   DateTime?
+  teamId      String         @db.ObjectId
+  team        DepartmentTeam @relation(fields: [teamId], references: [id])
+  employees   Employee[]
+}
+
+model Employee {
+  id                String            @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  fullName          String
+  mainWalletAddress String?
+  birthDate         String?
+  admittedAt        String?
+  dismissedAt       String?
+  capU              String?
+  role              String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime?         @default(now())
+  deleted           Boolean?          @default(false)
+  deletedAt         DateTime?
+  groupId           String            @db.ObjectId
+  group             DepartmentGroup   @relation(fields: [groupId], references: [id])
+  contacts          Contact[]
+  documents         Document[]
+  strikes           Strike[]
+  paychecks         PaycheckHistory[]
+  schedules         Schedule[]
+  promotions        Promotion[]
+  addresses         Address[]
+}
+
+model Contact {
+  id         String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  label      String
+  value      String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime? @default(now())
+  deleted    Boolean?  @default(false)
+  deletedAt  DateTime?
+  employeeId String    @db.ObjectId
+  employee   Employee  @relation(fields: [employeeId], references: [id])
+}
+
+model Document {
+  id         String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  label      String
+  value      String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime? @default(now())
+  deleted    Boolean?  @default(false)
+  deletedAt  DateTime?
+  employeeId String    @db.ObjectId
+  employee   Employee  @relation(fields: [employeeId], references: [id])
+}
+
+model PaycheckHistory {
+  id            String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  title         String
+  value         String
+  walletAddress String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @default(now())
+  deleted       Boolean?  @default(false)
+  deletedAt     DateTime?
+  employeeId    String    @db.ObjectId
+  employee      Employee  @relation(fields: [employeeId], references: [id])
+}
+
+model Strike {
+  id          String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @default(now())
+  deleted     Boolean?  @default(false)
+  deletedAt   DateTime?
+  employeeId  String    @db.ObjectId
+  employee    Employee  @relation(fields: [employeeId], references: [id])
+}
+
+model Schedule {
+  id         String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  day        String
+  start      String
+  end        String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime? @default(now())
+  deleted    Boolean?  @default(false)
+  deletedAt  DateTime?
+  employeeId String    @db.ObjectId
+  employee   Employee  @relation(fields: [employeeId], references: [id])
+}
+
+model Promotion {
+  id            String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  title         String
+  description   String
+  currentSalary String
+  newSalary     String
+  allowedBy     String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @default(now())
+  deleted       Boolean?  @default(false)
+  deletedAt     DateTime?
+  employeeId    String    @db.ObjectId
+  employee      Employee  @relation(fields: [employeeId], references: [id])
+}
+
+model Address {
+  id           String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  zipcode      String
+  streetName   String
+  number       String
+  neighborhood String
+  state        String
+  country      String
+  reference    String
+  city         String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @default(now())
+  deleted      Boolean?  @default(false)
+  deletedAt    DateTime?
+  employeeId   String    @db.ObjectId
+  employee     Employee  @relation(fields: [employeeId], references: [id])
+}
