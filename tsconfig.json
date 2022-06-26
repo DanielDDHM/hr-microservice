@@ -33,10 +33,17 @@
       "./src/typings"
     ],
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": [
+        "./src/*"
+      ]
     }
   },
   "include": [
     "src/"
+  ],
+  "exclude": [
+    "src/tests",
+    "src/scripts",
+    "src/cronjobs"
   ]
 }
